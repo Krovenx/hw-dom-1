@@ -55,9 +55,51 @@
     </div>
   </div>
 </body>
-
 <script>
+  const textareaEl = document.getElementById('textarea');
+  const commentsEl = document.getElementById('comments');
+  const buttonEl = document.getElementById('button');
+  buttonEl.addEventListener("click", () => {
+    const name = textareaEl.value;
+    const comment = commentsEl.value;
+    if (name.trim() && comment.trim()) {
 
+      const commentDiv = document.createElement('div');
+      const now = new Date();
+      const dateTime = now.toLocaleString('ru-RU', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      }).replace(',', '');
+
+      commentDiv.className = '';
+      commentDiv.innerHTML = `<li class="comment">
+        <div class="comment-header">
+          <div>${name}</div>
+          <div>${dateTime}</div>
+        </div>
+        <div class="comment-body">
+          <div class="comment-text">
+            ${comment}
+          </div>
+        </div>
+        <div class="comment-footer">
+          <div class="likes">
+            <span class="likes-counter">0</span>
+            <button class="like-button"></button>
+          </div>
+        </div>
+      </li>`;
+      document.querySelector('.comments').appendChild(commentDiv);
+
+      textareaEl.value = '';
+      commentsEl.value = '';
+    } else {
+      alert('Пожалуйста, заполните все поля!');
+    }
+  });
 </script>
 
 </html>
