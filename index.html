@@ -13,18 +13,21 @@
       <li class="comment">
         <div class="comment-header">
           <div>Глеб Фокин</div>
-          <div>12.02.22 12:18</div>
-        </div>
+          <div>12.02.22 12:18</div>         
+        </div>       
         <div class="comment-body">
           <div class="comment-text">
             Это будет первый комментарий на этой странице
           </div>
         </div>
         <div class="comment-footer">
+          
           <div class="likes">
+            
             <span class="likes-counter">3</span>
             <button class="like-button"></button>
           </div>
+          
         </div>
       </li>
       <li class="comment">
@@ -59,6 +62,7 @@
   const textareaEl = document.getElementById('textarea');
   const commentsEl = document.getElementById('comments');
   const buttonEl = document.getElementById('button');
+  const buttonDelete = document.getElementById('.buttonDelete');
   buttonEl.addEventListener("click", () => {
     const name = textareaEl.value;
     const comment = commentsEl.value;
@@ -89,17 +93,80 @@
           <div class="likes">
             <span class="likes-counter">0</span>
             <button class="like-button"></button>
+            
           </div>
         </div>
       </li>`;
-      document.querySelector('.comments').appendChild(commentDiv);
 
+      document.querySelector('.comments').appendChild(commentDiv);
       textareaEl.value = '';
       commentsEl.value = '';
     } else {
-      alert('Пожалуйста, заполните все поля!');
+      const errorMessage = document.createElement('div');
+      errorMessage.textContent = 'Пожалуйста, заполните все поля!';
+      errorMessage.style.color = 'red';
+      errorMessage.style.marginTop = '10px';
+      // Удаляем предыдущие сообщения об ошибке
+      const oldError = document.querySelector('.add-form .error-message');
+      if (oldError) oldError.remove();
+      errorMessage.className = 'error-message';
+      document.querySelector('.add-form').appendChild(errorMessage);
     }
+    // Находим все кнопки "Нравится" на странице
+    const likeButtons = document.querySelectorAll('.like-button');
+    // Добавляем обработчик события "click" на каждую кнопку "Нравится"
+    likeButtons.forEach((button) => {
+      // При клике на кнопку "Нравится" увеличиваем счетчик лайков
+      button.addEventListener('click', () => {
+        // Находим счетчик лайков, который находится перед кнопкой
+        const likesCounter = button.previousElementSibling;
+        // Получаем текущее количество лайков, преобразуем его в число
+        let likes = parseInt(likesCounter.textContent);
+        // Проверяем, есть ли у кнопки класс "-active-like"
+        if (button.classList.contains('-active-like')) {
+          // Если есть, уменьшаем количество лайков и удаляем класс
+          likes--;
+          // Удаляем класс "-active-like" с кнопки
+          button.classList.remove('-active-like');
+        // Если нет, увеличиваем количество лайков и добавляем класс
+        } else {
+          // Увеличиваем количество лайков и добавляем класс "-active-like"
+          likes++;
+          // Добавляем класс "-active-like" к кнопке
+          button.classList.add('-active-like');
+        }
+        
+        likesCounter.textContent = likes;
+      });
+      
+    });  
+    
   });
+  
+   textarea.addEventListener('input', (event) => {
+      console.log(event.target.value);
+    })
+
+     textarea.addEventListener('focus', (event) => {
+      console.log('focus');
+    })
+
+     textarea.addEventListener('blur', (event) => {
+      console.log('blur');
+    })
+
+     comments.addEventListener('input', (event) => {
+      console.log(event.target.value);
+    })
+
+     comments.addEventListener('focus', (event) => {
+      console.log('focus');
+    })
+
+     comments.addEventListener('blur', (event) => {
+      console.log('blur');
+    })
+
 </script>
 
 </html>
