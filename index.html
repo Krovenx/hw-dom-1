@@ -13,21 +13,21 @@
       <li class="comment">
         <div class="comment-header">
           <div>Глеб Фокин</div>
-          <div>12.02.22 12:18</div>         
-        </div>       
+          <div>12.02.22 12:18</div>
+        </div>
         <div class="comment-body">
           <div class="comment-text">
             Это будет первый комментарий на этой странице
           </div>
         </div>
         <div class="comment-footer">
-          
+
           <div class="likes">
-            
+
             <span class="likes-counter">3</span>
             <button class="like-button"></button>
           </div>
-          
+
         </div>
       </li>
       <li class="comment">
@@ -59,114 +59,118 @@
   </div>
 </body>
 <script>
-  const textareaEl = document.getElementById('textarea');
-  const commentsEl = document.getElementById('comments');
-  const buttonEl = document.getElementById('button');
-  const buttonDelete = document.getElementById('.buttonDelete');
-  buttonEl.addEventListener("click", () => {
-    const name = textareaEl.value;
-    const comment = commentsEl.value;
-    if (name.trim() && comment.trim()) {
+  const nameInputEl = document.getElementById('textarea'); // Поле имени
+  const commentInputEl = document.getElementById('comments'); // Поле комментария
+  const addButtonEl = document.getElementById('button'); // Кнопка добавления
+  const commentsListEl = document.querySelector('.comments'); // Список комментариев
 
-      const commentDiv = document.createElement('div');
-      const now = new Date();
-      const dateTime = now.toLocaleString('ru-RU', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      }).replace(',', '');
-
-      commentDiv.className = '';
-      commentDiv.innerHTML = `<li class="comment">
-        <div class="comment-header">
-          <div>${name}</div>
-          <div>${dateTime}</div>
-        </div>
-        <div class="comment-body">
-          <div class="comment-text">
-            ${comment}
-          </div>
-        </div>
-        <div class="comment-footer">
-          <div class="likes">
-            <span class="likes-counter">0</span>
-            <button class="like-button"></button>
-            
-          </div>
-        </div>
-      </li>`;
-
-      document.querySelector('.comments').appendChild(commentDiv);
-      textareaEl.value = '';
-      commentsEl.value = '';
-    } else {
-      const errorMessage = document.createElement('div');
-      errorMessage.textContent = 'Пожалуйста, заполните все поля!';
-      errorMessage.style.color = 'red';
-      errorMessage.style.marginTop = '10px';
-      // Удаляем предыдущие сообщения об ошибке
-      const oldError = document.querySelector('.add-form .error-message');
-      if (oldError) oldError.remove();
-      errorMessage.className = 'error-message';
-      document.querySelector('.add-form').appendChild(errorMessage);
+  // Исходные данные комментариев
+  const commentsData = [
+    {
+      name: "Глеб Фокин",
+      date: "12.02.22 12:18",
+      text: "Это будет первый комментарий на этой странице",
+      likes: 3,
+      isLiked: false
+    },
+    {
+      name: "Варвара Н.",
+      date: "13.02.22 19:22",
+      text: "Мне нравится как оформлена эта страница! ❤",
+      likes: 75,
+      isLiked: true
     }
-    // Находим все кнопки "Нравится" на странице
-    const likeButtons = document.querySelectorAll('.like-button');
-    // Добавляем обработчик события "click" на каждую кнопку "Нравится"
-    likeButtons.forEach((button) => {
-      // При клике на кнопку "Нравится" увеличиваем счетчик лайков
-      button.addEventListener('click', () => {
-        // Находим счетчик лайков, который находится перед кнопкой
-        const likesCounter = button.previousElementSibling;
-        // Получаем текущее количество лайков, преобразуем его в число
-        let likes = parseInt(likesCounter.textContent);
-        // Проверяем, есть ли у кнопки класс "-active-like"
-        if (button.classList.contains('-active-like')) {
-          // Если есть, уменьшаем количество лайков и удаляем класс
-          likes--;
-          // Удаляем класс "-active-like" с кнопки
-          button.classList.remove('-active-like');
-        // Если нет, увеличиваем количество лайков и добавляем класс
-        } else {
-          // Увеличиваем количество лайков и добавляем класс "-active-like"
-          likes++;
-          // Добавляем класс "-active-like" к кнопке
-          button.classList.add('-active-like');
-        }
-        
-        likesCounter.textContent = likes;
+  ];
+
+  // Функция для форматирования даты
+  function formatDate(date) {
+    return date.toLocaleString('ru-RU', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).replace(',', '');
+  }
+
+  // Функция отрисовки комментариев
+  function renderComments() {
+    commentsListEl.innerHTML = '';
+
+    commentsData.forEach((comment, index) => {
+      const likeClass = comment.isLiked ? '-active-like' : '';
+
+      commentsListEl.innerHTML += `
+        <li class="comment">
+          <div class="comment-header">
+            <div>${comment.name}</div>
+            <div>${comment.date}</div>
+          </div>
+          <div class="comment-body">
+            <div class="comment-text">${comment.text}</div>
+          </div>
+          <div class="comment-footer">
+            <div class="likes">
+              <span class="likes-counter">${comment.likes}</span>
+              <button class="like-button ${likeClass}" data-index="${index}"></button>
+            </div>
+          </div>
+        </li>
+      `;
+    });
+
+    // Навешиваем обработчики лайков
+    document.querySelectorAll('.like-button').forEach(button => {
+      button.addEventListener('click', (e) => {
+        const index = e.target.getAttribute('data-index');
+        commentsData[index].isLiked = !commentsData[index].isLiked;
+        commentsData[index].likes += commentsData[index].isLiked ? 1 : -1;
+        renderComments();
       });
-      
-    });  
-    
+    });
+  }
+
+  // Обработчик добавления комментария
+  addButtonEl.addEventListener('click', () => {
+    const name = nameInputEl.value.trim();
+    const text = commentInputEl.value.trim();
+
+    if (name && text) {
+      // Добавляем новый комментарий
+      commentsData.push({
+        name: name,
+        date: formatDate(new Date()),
+        text: text,
+        likes: 0,
+        isLiked: false
+      });
+
+      // Очищаем поля ввода
+      nameInputEl.value = '';
+      commentInputEl.value = '';
+
+      // Удаляем сообщение об ошибке, если было
+      const errorElement = document.querySelector('.error-message');
+      if (errorElement) errorElement.remove();
+
+      // Перерисовываем комментарии
+      renderComments();
+    } else {
+      // Показываем ошибку
+      const errorElement = document.querySelector('.error-message');
+      if (!errorElement) {
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'error-message';
+        errorMessage.textContent = 'Пожалуйста, заполните все поля!';
+        errorMessage.style.color = 'red';
+        errorMessage.style.marginTop = '10px';
+        document.querySelector('.add-form').appendChild(errorMessage);
+      }
+    }
   });
-  
-   textarea.addEventListener('input', (event) => {
-      console.log(event.target.value);
-    })
 
-     textarea.addEventListener('focus', (event) => {
-      console.log('focus');
-    })
-
-     textarea.addEventListener('blur', (event) => {
-      console.log('blur');
-    })
-
-     comments.addEventListener('input', (event) => {
-      console.log(event.target.value);
-    })
-
-     comments.addEventListener('focus', (event) => {
-      console.log('focus');
-    })
-
-     comments.addEventListener('blur', (event) => {
-      console.log('blur');
-    })
-
+  // Первоначальная отрисовка
+  renderComments();
 </script>
 
 </html>
