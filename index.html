@@ -168,9 +168,68 @@
       }
     }
   });
-
   // Первоначальная отрисовка
   renderComments();
+  // Функция для замены опасных символов на безопасные
+  function escapeHtml(text) {
+    return text
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#39;');
+  }
+
+  // Когда кликаем на текст комментария, добавляем его в поле ввода для ответа
+  commentsListEl.addEventListener('click', (event) => {
+    // Проверяем, что клик был по тексту комментария, а не по лайку
+    if (event.target.classList.contains('comment-text')) {
+      const commentEl = event.target.closest('.comment');
+      const author = commentEl.querySelector('.comment-header div').textContent;
+      const commentText = event.target.textContent;
+      commentInputEl.value = `> ${author}: ${commentText}\n`;
+      commentInputEl.focus();
+    }
+  });
+
+  // Изменяем функцию отрисовки, чтобы показывать только текст, а не HTML
+  function renderComments() {
+    commentsListEl.innerHTML = '';
+
+    commentsData.forEach((comment, index) => {
+      const likeClass = comment.isLiked ? '-active-like' : '';
+
+      commentsListEl.innerHTML += `
+        <li class="comment">
+          <div class="comment-header">
+            <div>${escapeHtml(comment.name)}</div>
+            <div>${escapeHtml(comment.date)}</div>
+          </div>
+          <div class="comment-body">
+            <div class="comment-text">${escapeHtml(comment.text)}</div>
+          </div>
+          <div class="comment-footer">
+            <div class="likes">
+              <span class="likes-counter">${comment.likes}</span>
+              <button class="like-button ${likeClass}" data-index="${index}"></button>
+            </div>
+          </div>
+        </li>
+      `;
+    });
+
+    // Обработчик лайка, чтобы не срабатывал ответ на комментарий
+    document.querySelectorAll('.like-button').forEach(button => {
+      button.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const index = e.target.getAttribute('data-index');
+        commentsData[index].isLiked = !commentsData[index].isLiked;
+        commentsData[index].likes += commentsData[index].isLiked ? 1 : -1;
+        renderComments();
+      });
+    });
+  }
+
 </script>
 
 </html>
