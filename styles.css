@@ -67,6 +67,7 @@ body {
   .likes {
     display: flex;
     align-items: center;
+   
   }
 
   .like-button {
@@ -123,6 +124,7 @@ body {
   }
 
   .add-form-button {
+  
     margin-top: 24px;
     font-size: 24px;
     padding: 10px 20px;
