@@ -1,0 +1,134 @@
+const nameInputEl = document.getElementById('textarea'); // Поле имени
+  const commentInputEl = document.getElementById('comments'); // Поле комментария
+  const addButtonEl = document.getElementById('button'); // Кнопка добавления
+  const commentsListEl = document.querySelector('.comments'); // Список комментариев
+
+  // Исходные данные комментариев
+  const commentsData = [
+    {
+      name: "Глеб Фокин",
+      date: "12.02.22 12:18",
+      text: "Это будет первый комментарий на этой странице",
+      likes: 3,
+      isLiked: false
+    },
+    {
+      name: "Варвара Н.",
+      date: "13.02.22 19:22",
+      text: "Мне нравится как оформлена эта страница! ❤",
+      likes: 75,
+      isLiked: true
+    }
+  ];
+
+  // Функция для форматирования даты
+  function formatDate(date) {
+    return date.toLocaleString('ru-RU', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).replace(',', '');
+  }
+  
+
+  // Обработчик добавления комментария
+  addButtonEl.addEventListener('click', () => {
+    const name = nameInputEl.value.trim();
+    const text = commentInputEl.value.trim();
+
+    if (name && text) {
+      // Добавляем новый комментарий
+      commentsData.push({
+        name: name,
+        date: formatDate(new Date()),
+        text: text,
+        likes: 0,
+        isLiked: false
+      });
+
+      // Очищаем поля ввода
+      nameInputEl.value = '';
+      commentInputEl.value = '';
+
+      // Удаляем сообщение об ошибке, если было
+      const errorElement = document.querySelector('.error-message');
+      if (errorElement) errorElement.remove();
+
+      // Перерисовываем комментарии
+      renderComments();
+    } else {
+      // Показываем ошибку
+      const errorElement = document.querySelector('.error-message');
+      if (!errorElement) {
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'error-message';
+        errorMessage.textContent = 'Пожалуйста, заполните все поля!';
+        errorMessage.style.color = 'red';
+        errorMessage.style.marginTop = '10px';
+        document.querySelector('.add-form').appendChild(errorMessage);
+      }
+    }
+  });
+  // Первоначальная отрисовка
+  renderComments();
+  // Функция для замены опасных символов на безопасные
+  function escapeHtml(text) {
+    return text
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#39;');
+  }
+
+  // Когда кликаем на текст комментария, добавляем его в поле ввода для ответа
+  commentsListEl.addEventListener('click', (event) => {
+    // Проверяем, что клик был по тексту комментария, а не по лайку
+    if (event.target.classList.contains('comment-text')) {
+      const commentEl = event.target.closest('.comment');
+      const author = commentEl.querySelector('.comment-header div').textContent;
+      const commentText = event.target.textContent;
+      commentInputEl.value = `> ${author}: ${commentText}\n`;
+      commentInputEl.focus();
+    }
+  });
+
+  // Изменяем функцию отрисовки, чтобы показывать только текст, а не HTML
+  function renderComments() {
+    commentsListEl.innerHTML = '';
+
+    commentsData.forEach((comment, index) => {
+      const likeClass = comment.isLiked ? '-active-like' : '';
+
+      commentsListEl.innerHTML += `
+        <li class="comment">
+          <div class="comment-header">
+            <div>${escapeHtml(comment.name)}</div>
+            <div>${escapeHtml(comment.date)}</div>
+          </div>
+          <div class="comment-body">
+            <div class="comment-text">${escapeHtml(comment.text)}</div>
+          </div>
+          <div class="comment-footer">
+            <div class="likes">
+              <span class="likes-counter">${comment.likes}</span>
+              <button class="like-button ${likeClass}" data-index="${index}"></button>
+            </div>
+          </div>
+        </li>
+      `;
+    });
+
+    // Обработчик лайка, чтобы не срабатывал ответ на комментарий
+    document.querySelectorAll('.like-button').forEach(button => {
+      button.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const index = e.target.getAttribute('data-index');
+        commentsData[index].isLiked = !commentsData[index].isLiked;
+        commentsData[index].likes += commentsData[index].isLiked ? 1 : -1;
+        renderComments();
+      });
+    });
+  }
