@@ -1,14 +1,13 @@
-import { commentsData } from "./commentsData.js";
-import { escapeHtml } from "./function.js";
+import { commentsData } from './commentsData.js'
+import { escapeHtml } from './function.js'
 
-const commentsListEl = document.querySelector('.comments');
-const commentInputEl = document.getElementById('comments');
+const commentsListEl = document.querySelector('.comments')
+const commentInputEl = document.getElementById('comments')
 
 export function renderComments() {
-
-    commentsListEl.innerHTML = '';
+    commentsListEl.innerHTML = ''
     commentsData.forEach((comment, index) => {
-        const likeClass = comment.isLiked ? '-active-like' : '';
+        const likeClass = comment.isLiked ? '-active-like' : ''
 
         commentsListEl.innerHTML += `
         <li class="comment">
@@ -26,29 +25,31 @@ export function renderComments() {
             </div>
           </div>
         </li>
-      `;
-    });
+      `
+    })
 
     // Обработчик лайка, чтобы не срабатывал ответ на комментарий
-    document.querySelectorAll('.like-button').forEach(button => {
+    document.querySelectorAll('.like-button').forEach((button) => {
         button.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const index = e.target.getAttribute('data-index');
-            commentsData[index].isLiked = !commentsData[index].isLiked;
-            commentsData[index].likes += commentsData[index].isLiked ? 1 : -1;
-            renderComments();
-        });
-    });
+            e.stopPropagation()
+            const index = e.target.getAttribute('data-index')
+            commentsData[index].isLiked = !commentsData[index].isLiked
+            commentsData[index].likes += commentsData[index].isLiked ? 1 : -1
+            renderComments()
+        })
+    })
 }
 
 // Когда кликаем на текст комментария, добавляем его в поле ввода для ответа
 commentsListEl.addEventListener('click', (event) => {
     // Проверяем, что клик был по тексту комментария, а не по лайку
     if (event.target.classList.contains('comment-text')) {
-        const commentEl = event.target.closest('.comment');
-        const author = commentEl.querySelector('.comment-header div').textContent;
-        const commentText = event.target.textContent;
-        commentInputEl.value = `> ${author}: ${commentText}\n`;
-        commentInputEl.focus();
+        const commentEl = event.target.closest('.comment')
+        const author = commentEl.querySelector(
+            '.comment-header div',
+        ).textContent
+        const commentText = event.target.textContent
+        commentInputEl.value = `> ${author}: ${commentText}\n`
+        commentInputEl.focus()
     }
-});
+})
