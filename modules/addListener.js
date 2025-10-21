@@ -1,7 +1,8 @@
-import { commentsData } from './commentsData.js'
+// import { commentsData } from './commentsData.js'
 import { renderComments } from './renderComments.js'
-import { formatDate } from './function.js'
-
+// import { formatDate } from './function.js'
+import { updateCommentsData } from './commentsData.js'
+import { host } from './addListener.js'
 const nameInputEl = document.getElementById('textarea')
 const commentInputEl = document.getElementById('comments')
 const addButtonEl = document.getElementById('button')
@@ -12,14 +13,30 @@ addButtonEl.addEventListener('click', () => {
     const text = commentInputEl.value.trim()
 
     if (name && text) {
-        // Добавляем новый комментарий
-        commentsData.push({
+        // Добавляем новый комментари
+        // commentsData.push({
+        //     name: name,
+        //     date: formatDate(new Date()),
+        //     text: text,
+        //     likes: 0,
+        //     isLiked: false,
+        // })
+        const newComment = {
             name: name,
-            date: formatDate(new Date()),
             text: text,
-            likes: 0,
-            isLiked: false,
+        }
+
+        fetch(`${host}`, {
+            method: 'POST',
+            body: JSON.stringify(newComment),
         })
+            .then((response) => {
+                return response.json()
+            })
+            .then((data) => {
+                updateCommentsData(data.comments)
+                renderComments()
+            })
 
         // Очищаем поля ввода
         nameInputEl.value = ''
@@ -30,9 +47,8 @@ addButtonEl.addEventListener('click', () => {
         if (errorElement) errorElement.remove()
 
         // Перерисовываем комментарии
-        renderComments()
     } else {
-        // Показываем ошибку
+        // стиль всплывающего текста при ошибке
         const errorElement = document.querySelector('.error-message')
         if (!errorElement) {
             const errorMessage = document.createElement('div')
@@ -40,6 +56,7 @@ addButtonEl.addEventListener('click', () => {
             errorMessage.textContent = 'Пожалуйста, заполните все поля!'
             errorMessage.style.color = 'red'
             errorMessage.style.marginTop = '10px'
+            // для появление ошибки под формой
             document.querySelector('.add-form').appendChild(errorMessage)
         }
     }

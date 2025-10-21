@@ -3,13 +3,16 @@ import { escapeHtml } from './function.js'
 
 const commentsListEl = document.querySelector('.comments')
 const commentInputEl = document.getElementById('comments')
-
 export function renderComments() {
+    if (!commentsData) {
+        return
+    }
     commentsListEl.innerHTML = ''
-    commentsData.forEach((comment, index) => {
-        const likeClass = comment.isLiked ? '-active-like' : ''
-
-        commentsListEl.innerHTML += `
+    const commentsHTML = commentsData
+        .map((comment, index) => {
+            console.log(comment)
+            const likeClass = comment.isLiked ? '-active-like' : ''
+            return `
         <li class="comment">
           <div class="comment-header">
             <div>${escapeHtml(comment.name)}</div>
@@ -26,7 +29,9 @@ export function renderComments() {
           </div>
         </li>
       `
-    })
+        })
+        .join('')
+    commentsListEl.innerHTML = commentsHTML
 
     // Обработчик лайка, чтобы не срабатывал ответ на комментарий
     document.querySelectorAll('.like-button').forEach((button) => {
