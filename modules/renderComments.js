@@ -9,21 +9,21 @@ export function renderComments() {
     }
     commentsListEl.innerHTML = ''
     const commentsHTML = commentsData
-        .map((comment, index) => {
-            console.log(comment)
-            const likeClass = comment.isLiked ? '-active-like' : ''
-            return `
+        .map((comments, index) => {
+            console.log(comments)
+            const likeClass = comments.isLiked ? '-active-like' : ''
+            return `        
         <li class="comment">
           <div class="comment-header">
-            <div>${escapeHtml(comment.name)}</div>
-            <div>${escapeHtml(comment.date)}</div>
+            <div>${escapeHtml(comments.name)}</div>
+            <div>${escapeHtml(comments.date)}</div>
           </div>
           <div class="comment-body">
-            <div class="comment-text">${escapeHtml(comment.text)}</div>
+            <div class="comment-text">${escapeHtml(comments.text)}</div>
           </div>
           <div class="comment-footer">
             <div class="likes">
-              <span class="likes-counter">${comment.likes}</span>
+              <span class="likes-counter">${comments.likes}</span>
               <button class="like-button ${likeClass}" data-index="${index}"></button>
             </div>
           </div>
