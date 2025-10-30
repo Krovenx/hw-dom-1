@@ -1,8 +1,7 @@
 import { commentsData } from './commentsData.js'
 import { escapeHtml } from './function.js'
-
+import { deleteComments } from './deleteComments.js'
 const commentsListEl = document.querySelector('.comments')
-const commentInputEl = document.getElementById('comments')
 export function renderComments() {
     if (!commentsData) {
         return
@@ -27,6 +26,7 @@ export function renderComments() {
               <button class="like-button ${likeClass}" data-index="${index}"></button>
             </div>
           </div>
+           <button class="delete-form-button" data-index="${index}"> Удалить </button>
         </li>
       `
         })
@@ -43,18 +43,5 @@ export function renderComments() {
             renderComments()
         })
     })
+    deleteComments()
 }
-
-// Когда кликаем на текст комментария, добавляем его в поле ввода для ответа
-commentsListEl.addEventListener('click', (event) => {
-    // Проверяем, что клик был по тексту комментария, а не по лайку
-    if (event.target.classList.contains('comment-text')) {
-        const commentEl = event.target.closest('.comment')
-        const author = commentEl.querySelector(
-            '.comment-header div',
-        ).textContent
-        const commentText = event.target.textContent
-        commentInputEl.value = `> ${author}: ${commentText}\n`
-        commentInputEl.focus()
-    }
-})

@@ -7,7 +7,6 @@ export const addCommentListener = () => {
     const nameInputEl = document.getElementById('textarea')
     const commentInputEl = document.getElementById('comments')
     const addButtonEl = document.getElementById('button')
-
     addButtonEl.addEventListener('click', () => {
         const name = nameInputEl.value.trim()
         const text = commentInputEl.value.trim()
