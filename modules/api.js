@@ -1,14 +1,16 @@
 import { formatDate } from './function.js'
-
-const host = 'https://wedev-api.sky.pro/api/v1/witalii-barabanov'
+import { fetchAndRenderComments } from './fetchAndRenderComments.js'
+export const host = 'https://wedev-api.sky.pro/api/v1/witalii-barabanov'
+// обновленный список после добавления нового комментария
 export const fetchComments = () => {
     return fetch(host + '/comments')
         .then((response) => {
             return response.json()
         })
-        .then((ResponseData) => {
-            const appComments = ResponseData.comments.map((comment) => {
+        .then((data) => {
+            const appComments = data.comments.map((comment) => {
                 return {
+                    id: comment.id,
                     name: comment.author.name,
                     date: formatDate(new Date(comment.date)),
                     text: comment.text,
@@ -28,6 +30,14 @@ export const postComment = (text, name) => {
             name,
         }),
     }).then(() => {
-        return fetchComments()
+        return fetchComments() // возвращаем обновленный список
+    })
+}
+
+export const deleteComment = (commentId) => {
+    return fetch(host + `/comments/${commentId}`, {
+        method: 'DELETE',
+    }).then(() => {
+        fetchAndRenderComments()
     })
 }

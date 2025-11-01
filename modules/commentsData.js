@@ -1,5 +1,6 @@
-export let commentsData = []
+export const commentsData = []
 
 export const updateCommentsData = (newComments) => {
-    commentsData = newComments
+    commentsData.length = 0
+    commentsData.push(...newComments)
 }
