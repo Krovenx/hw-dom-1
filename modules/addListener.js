@@ -8,10 +8,10 @@ export const addCommentListener = () => {
     const commentInputEl = document.getElementById('comments')
     const addButtonEl = document.getElementById('button')
     addButtonEl.addEventListener('click', () => {
-        addButtonEl.disabled = true
-        addButtonEl.textContent = 'Ожидаем'
         const name = nameInputEl.value.trim()
         const text = commentInputEl.value.trim()
+        addButtonEl.disabled = true
+        addButtonEl.textContent = 'Комментарий добавляется'
         if (name && text) {
             postComment(name, text).then((data) => {
                 updateCommentsData(data)
@@ -39,9 +39,10 @@ export const addCommentListener = () => {
                 // для появление ошибки под формой
                 document.querySelector('.add-form').appendChild(errorMessage)
             }
-            // При ошибке возвращает
+
             addButtonEl.disabled = false
             addButtonEl.textContent = 'Написать'
+            // При ошибке возвращает
         }
     })
 }
