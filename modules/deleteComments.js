@@ -1,6 +1,3 @@
-// import { renderComments } from './renderComments.js'
-
-// Удаление комментария
 export const deleteComments = () => {
     const deleteButtons = document.querySelectorAll('.delete-form-button')
 

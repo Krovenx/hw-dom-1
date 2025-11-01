@@ -8,6 +8,8 @@ export const addCommentListener = () => {
     const commentInputEl = document.getElementById('comments')
     const addButtonEl = document.getElementById('button')
     addButtonEl.addEventListener('click', () => {
+        addButtonEl.disabled = true
+        addButtonEl.textContent = 'Ожидаем'
         const name = nameInputEl.value.trim()
         const text = commentInputEl.value.trim()
         if (name && text) {
@@ -17,12 +19,13 @@ export const addCommentListener = () => {
                 // Очищаем поля ввода
                 nameInputEl.value = ''
                 commentInputEl.value = ''
+                addButtonEl.disabled = false
+                addButtonEl.textContent = 'Написать'
             })
 
             // Удаляем сообщение об ошибке, если было
             const errorElement = document.querySelector('.error-message')
             if (errorElement) errorElement.remove()
-
             // Перерисовываем комментарии
         } else {
             // стиль всплывающего текста при ошибке
@@ -36,6 +39,9 @@ export const addCommentListener = () => {
                 // для появление ошибки под формой
                 document.querySelector('.add-form').appendChild(errorMessage)
             }
+            // При ошибке возвращает
+            addButtonEl.disabled = false
+            addButtonEl.textContent = 'Написать'
         }
     })
 }
