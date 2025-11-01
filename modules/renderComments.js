@@ -1,8 +1,9 @@
 import { commentsData } from './commentsData.js'
-import { escapeHtml } from './function.js'
+import { escapeHtml, delay } from './function.js'
 import { deleteComments } from './deleteComments.js'
-const commentsListEl = document.querySelector('.comments')
+
 export function renderComments() {
+    const commentsListEl = document.querySelector('.comments')
     if (!commentsData) {
         return
     }
@@ -38,9 +39,16 @@ export function renderComments() {
         button.addEventListener('click', (e) => {
             e.stopPropagation()
             const index = e.target.getAttribute('data-index')
-            commentsData[index].isLiked = !commentsData[index].isLiked
-            commentsData[index].likes += commentsData[index].isLiked ? 1 : -1
-            renderComments()
+            const comment = commentsData[index]
+            e.target.classList.add('-loading-like')
+            delay(2000).then(() => {
+                comment.likes = comment.isLiked
+                    ? comment.likes - 1
+                    : comment.likes + 1
+                comment.isLiked = !comment.isLiked
+                comment.isLikeLoading = false
+                renderComments()
+            })
         })
     })
     deleteComments()
