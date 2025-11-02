@@ -1,27 +1,38 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
+    <head>
+        <title>Проект "Комменты"</title>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" href="styles.css" />
+    </head>
 
-<head>
-  <title>Проект "Комменты"</title>
-  <meta charset="utf-8" />
-  <link rel="stylesheet" href="styles.css" />
-</head>
-
-<body>
-  <div class="container">
-    <ul class="comments">
-      <li class="comment">
-    </ul>
-    <div class="add-form">
-      <input type="text" class="add-form-name" placeholder="Введите ваше имя" id="textarea" />
-      <textarea type="textarea" class="add-form-text" placeholder="Введите ваш коментарий" rows="4"
-        id="comments"></textarea>
-      <div class="add-form-row">
-        <button class="add-form-button" id="button">Написать</button>
-      </div>
-    </div>
-  </div>
-</body>
-<script type="module" src="index.js"></script>
-
+    <body>
+        <div class="container">
+            <ul class="comments">
+                <li>Пожалуйста, подождите, загружаются комментарии</li>
+                <li class="comment"></li>
+            </ul>
+            <div class="add-form">
+                <input
+                    type="text"
+                    class="add-form-name"
+                    placeholder="Введите ваше имя"
+                    id="textarea"
+                />
+                <textarea
+                    type="textarea"
+                    class="add-form-text"
+                    placeholder="Введите ваш коментарий"
+                    rows="4"
+                    id="comments"
+                ></textarea>
+                <div class="add-form-row">
+                    <button class="add-form-button" id="button">
+                        Написать
+                    </button>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script type="module" src="index.js"></script>
 </html>

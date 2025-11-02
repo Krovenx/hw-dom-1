@@ -1,9 +1,9 @@
 import { commentsData } from './commentsData.js'
-import { escapeHtml } from './function.js'
+import { escapeHtml, delay } from './function.js'
+import { deleteComments } from './deleteComments.js'
 
-const commentsListEl = document.querySelector('.comments')
-const commentInputEl = document.getElementById('comments')
 export function renderComments() {
+    const commentsListEl = document.querySelector('.comments')
     if (!commentsData) {
         return
     }
@@ -27,34 +27,48 @@ export function renderComments() {
               <button class="like-button ${likeClass}" data-index="${index}"></button>
             </div>
           </div>
+           <button class="delete-form-button" data-index="${index}"> Удалить </button>
         </li>
       `
         })
         .join('')
     commentsListEl.innerHTML = commentsHTML
 
+    commentsListEl.addEventListener('click', (event) => {
+        // Если кликнули на текст комментария
+        if (event.target.classList.contains('comment-text')) {
+            // находим поле ввода комментария
+            const commentInputEl = document.getElementById('comments')
+            // получаем автора комментария
+            const comment = event.target.closest('.comment')
+            const author = comment.querySelector(
+                '.comment-header div',
+            ).textContent
+            //получаем текст комментария
+            const text = event.target.textContent
+            //Вставляем в форму "> Автор: текст комментария"
+            commentInputEl.value = `${author}: ${text}\n`
+            // Переводим курсор в поле ввода
+            commentInputEl.focus()
+        }
+    })
+
     // Обработчик лайка, чтобы не срабатывал ответ на комментарий
     document.querySelectorAll('.like-button').forEach((button) => {
         button.addEventListener('click', (e) => {
             e.stopPropagation()
             const index = e.target.getAttribute('data-index')
-            commentsData[index].isLiked = !commentsData[index].isLiked
-            commentsData[index].likes += commentsData[index].isLiked ? 1 : -1
-            renderComments()
+            const comment = commentsData[index]
+            e.target.classList.add('-loading-like')
+            delay(2000).then(() => {
+                comment.likes = comment.isLiked
+                    ? comment.likes - 1
+                    : comment.likes + 1
+                comment.isLiked = !comment.isLiked
+                comment.isLikeLoading = false
+                renderComments()
+            })
         })
     })
+    deleteComments()
 }
-
-// Когда кликаем на текст комментария, добавляем его в поле ввода для ответа
-commentsListEl.addEventListener('click', (event) => {
-    // Проверяем, что клик был по тексту комментария, а не по лайку
-    if (event.target.classList.contains('comment-text')) {
-        const commentEl = event.target.closest('.comment')
-        const author = commentEl.querySelector(
-            '.comment-header div',
-        ).textContent
-        const commentText = event.target.textContent
-        commentInputEl.value = `> ${author}: ${commentText}\n`
-        commentInputEl.focus()
-    }
-})

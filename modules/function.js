@@ -20,3 +20,11 @@ export function formatDate(date) {
         })
         .replace(',', '')
 }
+
+export function delay(interval = 300) {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve()
+        }, interval)
+    })
+}
