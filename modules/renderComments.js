@@ -4,7 +4,6 @@ import { deleteComments } from './deleteComments.js'
 
 export function renderComments() {
     const commentsListEl = document.querySelector('.comments')
-    const commentInputEl = document.getElementById('comments')
     if (!commentsData) {
         return
     }
@@ -41,7 +40,7 @@ export function renderComments() {
             // находим поле ввода комментария
             const commentInputEl = document.getElementById('comments')
             // получаем автора комментария
-            const comment = event.target.closest('.comments')
+            const comment = event.target.closest('.comment')
             const author = comment.querySelector(
                 '.comment-header div',
             ).textContent
