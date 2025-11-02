@@ -165,3 +165,7 @@ body {
 .-loading-like {
    animation: rotating 2s linear infinite;
 }
+
+.comment:empty {
+    display: none;
+}
