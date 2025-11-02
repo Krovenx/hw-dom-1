@@ -4,6 +4,7 @@ import { deleteComments } from './deleteComments.js'
 
 export function renderComments() {
     const commentsListEl = document.querySelector('.comments')
+    const commentInputEl = document.getElementById('comments')
     if (!commentsData) {
         return
     }
@@ -33,6 +34,25 @@ export function renderComments() {
         })
         .join('')
     commentsListEl.innerHTML = commentsHTML
+
+    commentsListEl.addEventListener('click', (event) => {
+        // Если кликнули на текст комментария
+        if (event.target.classList.contains('comment-text')) {
+            // находим поле ввода комментария
+            const commentInputEl = document.getElementById('comments')
+            // получаем автора комментария
+            const comment = event.target.closest('.comments')
+            const author = comment.querySelector(
+                '.comment-header div',
+            ).textContent
+            //получаем текст комментария
+            const text = event.target.textContent
+            //Вставляем в форму "> Автор: текст комментария"
+            commentInputEl.value = `${author}: ${text}\n`
+            // Переводим курсор в поле ввода
+            commentInputEl.focus()
+        }
+    })
 
     // Обработчик лайка, чтобы не срабатывал ответ на комментарий
     document.querySelectorAll('.like-button').forEach((button) => {
