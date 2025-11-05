@@ -37,13 +37,22 @@ export const addCommentListener = () => {
             loadingText.textContent = 'Комментарий добавляется...'
             addFormEl.parentNode.appendChild(loadingText)
 
-            postComment(name, text, addButtonEl).then((data) => {
-                updateCommentsData(data)
-                renderComments()
-                // Очищаем поля ввода
-                nameInputEl.value = ''
-                commentInputEl.value = ''
-            })
+            postComment(name, text, addButtonEl)
+                .then((data) => {
+                    updateCommentsData(data)
+                    renderComments()
+                    // Очищаем поля ввода
+                    nameInputEl.value = ''
+                    commentInputEl.value = ''
+                })
+                .finally(() => {
+                    addButtonEl.disabled = false
+                    addButtonEl.textContent = 'Написать'
+                    addFormEl.style.display = 'flex'
+                    loadingText.remove()
+                    nameInputEl.value = ''
+                    commentInputEl.value = ''
+                })
 
             // Удаляем сообщение об ошибке, если было
             const errorElement = document.querySelector('.error-message')
