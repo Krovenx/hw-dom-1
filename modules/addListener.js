@@ -8,6 +8,23 @@ export const addCommentListener = () => {
     const commentInputEl = document.getElementById('comments')
     const addButtonEl = document.getElementById('button')
     const addFormEl = document.querySelector('.add-form')
+
+    // обработчик для ентера, переход на следующие поле ввода
+    nameInputEl.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault()
+            commentInputEl.focus()
+        }
+    })
+
+    // добавляем shift + enter
+    commentInputEl.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault()
+            addButtonEl.click()
+        }
+    })
+
     addButtonEl.addEventListener('click', () => {
         const name = nameInputEl.value.trim()
         const text = commentInputEl.value.trim()
@@ -20,13 +37,22 @@ export const addCommentListener = () => {
             loadingText.textContent = 'Комментарий добавляется...'
             addFormEl.parentNode.appendChild(loadingText)
 
-            postComment(name, text).then((data) => {
-                updateCommentsData(data)
-                renderComments()
-                // Очищаем поля ввода
-                nameInputEl.value = ''
-                commentInputEl.value = ''
-            })
+            postComment(name, text, addButtonEl)
+                .then((data) => {
+                    updateCommentsData(data)
+                    renderComments()
+                    // Очищаем поля ввода
+                    nameInputEl.value = ''
+                    commentInputEl.value = ''
+                })
+                .finally(() => {
+                    addButtonEl.disabled = false
+                    addButtonEl.textContent = 'Написать'
+                    addFormEl.style.display = 'flex'
+                    loadingText.remove()
+                    nameInputEl.value = ''
+                    commentInputEl.value = ''
+                })
 
             // Удаляем сообщение об ошибке, если было
             const errorElement = document.querySelector('.error-message')
