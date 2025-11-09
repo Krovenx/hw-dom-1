@@ -22,16 +22,43 @@ export const fetchComments = () => {
         })
 }
 
-export const postComment = (text, name) => {
+export const postComment = (name, text) => {
     return fetch(host + '/comments', {
         method: 'POST',
         body: JSON.stringify({
             text,
             name,
         }),
-    }).then(() => {
-        return fetchComments() // возвращаем обновленный список
     })
+        .then((response) => {
+            if (response.status === 201) {
+                return response.json()
+            } else {
+                if (response.status === 400) {
+                    throw new Error(
+                        'Имя и комментарий должны быть не короче 3 символов',
+                    )
+                }
+                if (response.status === 500) {
+                    throw new Error('Сервер упал')
+                }
+
+                throw new Error('Что то пошло не так')
+            }
+        })
+        .then(() => {
+            return fetchComments() // возвращаем обновленный список
+        })
+        .catch((error) => {
+            if (
+                error.message ===
+                'Имя и комментарий должны быть не короче 3 символов'
+            ) {
+                alert(error.message)
+            } else {
+                alert('Нет подключение к сети')
+            }
+        })
 }
 
 export const deleteComment = (commentId) => {
