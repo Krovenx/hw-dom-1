@@ -1,27 +1,10 @@
-import { formatDate } from './function.js'
-import { fetchAndRenderComments } from './fetchAndRenderComments.js'
-export const host = 'https://wedev-api.sky.pro/api/v1/witalii-barabanov'
-// обновленный список после добавления нового комментария
-export const fetchComments = () => {
-    return fetch(host + '/comments')
-        .then((response) => {
-            return response.json()
-        })
-        .then((data) => {
-            const appComments = data.comments.map((comment) => {
-                return {
-                    id: comment.id,
-                    name: comment.author.name,
-                    date: formatDate(new Date(comment.date)),
-                    text: comment.text,
-                    likes: comment.likes,
-                    isLiked: false,
-                }
-            })
-            return appComments
-        })
-}
+// import { renderComments } from './renderComments.js'
+// import { updateCommentsData } from './commentsData.js'
+// import { formatDate } from './function.js'
+import { fetchComments } from './fetchAndRenderComments.js'
+import { host } from './fetchAndRenderComments.js'
 
+// обновленный список после добавления нового комментария
 export const postComment = (name, text) => {
     return fetch(host + '/comments', {
         method: 'POST',
@@ -65,6 +48,6 @@ export const deleteComment = (commentId) => {
     return fetch(host + `/comments/${commentId}`, {
         method: 'DELETE',
     }).then(() => {
-        fetchAndRenderComments()
+        return fetchComments()
     })
 }
