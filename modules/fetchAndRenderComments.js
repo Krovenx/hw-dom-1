@@ -1,10 +1,16 @@
 import { updateCommentsData } from './commentsData.js'
-import { formatDate } from './function.js'
 import { renderComments } from './renderComments.js'
+import { token } from './api.js'
+// import { fetchComments } from './api.js'
+import { host } from './api.js'
+import { formatDate } from './function.js'
 
-export const host = 'https://wedev-api.sky.pro/api/v1/witalii-barabanov'
-export const fetchComments = () => {
-    return fetch(host + '/comments')
+export const fetchAndRenderComments = () => {
+    return fetch(host + '/comments', {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    })
         .then((response) => {
             if (response.status === 401) {
                 throw new Error('Нет авторизации')
@@ -22,7 +28,7 @@ export const fetchComments = () => {
                     isLiked: false,
                 }
             })
-            updateCommentsData(data.comments)
+            updateCommentsData(appComments)
             renderComments()
             return appComments
         })
