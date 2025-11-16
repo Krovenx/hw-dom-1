@@ -1,6 +1,9 @@
 import { fetchAndRenderComments } from './fetchAndRenderComments.js'
+import { updateCommentsData } from './commentsData.js'
+import { renderComments } from './renderComments.js'
+import { formatDate } from './function.js'
 
-export const host = 'https://wedev-api.sky.pro/api/v1/witalii-barabanov'
+export const host = 'https://wedev-api.sky.pro/api/v2/witalii-barabanov'
 const authToken = 'https://wedev-api.sky.pro/api/user'
 export let token = ''
 export const updateToken = (newToken) => {
@@ -12,9 +15,25 @@ export const fetchComments = () => {
         headers: {
             Authorization: `Bearer ${token}`,
         },
-    }).then(() => {
-        return fetchAndRenderComments()
     })
+        .then(() => {
+            return fetchAndRenderComments()
+        })
+        .then((data) => {
+            const appComments = data.comments.map((comment) => {
+                return {
+                    id: comment.id,
+                    name: comment.author.name,
+                    date: formatDate(new Date(comment.date)),
+                    text: comment.text,
+                    likes: comment.likes,
+                    isLiked: false,
+                }
+            })
+            updateCommentsData(appComments)
+            renderComments()
+            return appComments
+        })
 }
 // обновленный список после добавления нового комментария
 export const postComment = (name, text) => {
@@ -28,16 +47,16 @@ export const postComment = (name, text) => {
             name,
         }),
     })
-        .then((errorStatus) => {
-            if (errorStatus.status === 201) {
-                return errorStatus.json()
+        .then((response) => {
+            if (response.status === 201) {
+                return response.json()
             } else {
-                if (errorStatus.status === 400) {
+                if (response.status === 400) {
                     throw new Error(
                         'Имя и комментарий должны быть не короче 3 символов',
                     )
                 }
-                if (errorStatus.status === 500) {
+                if (response.status === 500) {
                     throw new Error('Сервер упал')
                 }
 
@@ -45,7 +64,7 @@ export const postComment = (name, text) => {
             }
         })
         .then(() => {
-            return fetchAndRenderComments() // возвращаем обновленный список
+            return fetchComments() // возвращаем обновленный список
         })
         .catch((error) => {
             if (
@@ -71,37 +90,25 @@ export const deleteComment = (commentId) => {
 }
 
 export const postLogin = (login, password) => {
-    return fetch(`${authToken}/login`, {
+    return fetch(authToken + '/login', {
         method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
-            login,
-            password,
+            login: login,
+            password: password,
         }),
     })
-        .then((response) => {
-            if (response.status === 201) {
-                return response.json()
-            } else {
-                if (response.status === 400) {
-                    throw new Error(
-                        'Имя и комментарий должны быть не короче 3 символов',
-                    )
-                }
-                if (response.status === 500) {
-                    throw new Error('Сервер упал')
-                }
+}
 
-                throw new Error('Что то пошло не так')
-            }
-        })
-        .catch((error) => {
-            if (
-                error.message ===
-                'Имя и комментарий должны быть не короче 3 символов'
-            ) {
-                alert(error.message)
-            } else {
-                alert('Нет подключение к сети')
-            }
-        })
+export const postRegistration = (login, name, password) => {
+    return fetch(authToken, {
+        method: 'POST',
+        body: JSON.stringify({
+            login: login,
+            password: password,
+            name: name,
+        }),
+    })
 }

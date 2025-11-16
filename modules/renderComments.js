@@ -32,7 +32,31 @@ export function renderComments() {
       `
         })
         .join('')
-    commentsListEl.innerHTML = commentsHTML
+//     const addCommentsHtml = `
+//               <div class="add-form" id="add-form">
+//                 <input
+//                     type="text"
+//                     class="add-form-name"
+//                     placeholder="Введите ваше имя"
+//                     id="textarea"
+//                 />
+//                 <textarea
+//                     type="textarea"
+//                     class="add-form-text"
+//                     placeholder="Введите ваш коментарий"
+//                     rows="4"
+//                     id="comments"
+//                 ></textarea>
+//                 <div class="add-form-row">
+//                     <button class="add-form-button" id="button">
+//                         Написать
+//                     </button>
+//                 </div>
+//             </div>`
+//     const baseHtml = `<ul class="comments">${commentsListEl}</ul>
+// ${addCommentsHtml}`
+//     container.innerHTML = baseHtml
+//     commentsListEl.innerHTML = commentsHTML
 
     commentsListEl.addEventListener('click', (event) => {
         // Если кликнули на текст комментария

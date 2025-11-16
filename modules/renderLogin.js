@@ -1,6 +1,6 @@
 import { postLogin, updateToken } from './api.js'
 import { fetchComments } from './api.js'
-import { addCommentListener } from './addListener.js'
+import { renderRegistration } from './renderRegistration.js'
 
 export const renderLogin = () => {
     const loginFormEl = document.getElementById('add-form')
@@ -22,20 +22,13 @@ export const renderLogin = () => {
     const passwordEl = document.getElementById('password-input')
 
     buttonEl.addEventListener('click', () => {
-        postLogin(loginEl.value, passwordEl.value)
-            .then((responseData) => {
-                updateToken(responseData.user.token)
-                return fetchComments()
-            })
-            .then(() => {
-                const formEl = document.getElementById('add-form')
-                formEl.innerHTML = `
-            <input type="text" class="add-form-name" placeholder="Введите ваше имя" id="textarea" />
-            <textarea type="textarea" class="add-form-text" placeholder="Введите ваш коментарий" rows="4" id="comments"></textarea>
-            <div class="add-form-row">
-                <button class="add-form-button" id="button">Написать</button>
-            </div>`
-                addCommentListener()
-            })
+        postLogin(loginEl.value, passwordEl.value).then((responseData) => {
+            updateToken(responseData.user.token)
+            return fetchComments()
+        })
+    })
+    const regButtonEl = document.getElementById('reg-button')
+    regButtonEl.addEventListener('click', () => {
+        renderRegistration()
     })
 }
