@@ -1,13 +1,17 @@
 import { commentsData } from './commentsData.js'
 import { escapeHtml, delay } from './function.js'
 import { deleteComments } from './deleteComments.js'
+import { addCommentListener } from './addListener.js'
+import { renderLogin } from './renderLogin.js'
+import { token } from './api.js'
 
 export function renderComments() {
-    const commentsListEl = document.querySelector('.comments')
     if (!commentsData) {
         return
     }
-    commentsListEl.innerHTML = ''
+
+    const container = document.querySelector('.container')
+
     const commentsHTML = commentsData
         .map((comments, index) => {
             console.log(comments)
@@ -32,43 +36,88 @@ export function renderComments() {
       `
         })
         .join('')
-    commentsListEl.innerHTML = commentsHTML
 
-    commentsListEl.addEventListener('click', (event) => {
-        // Если кликнули на текст комментария
-        if (event.target.classList.contains('comment-text')) {
-            // находим поле ввода комментария
-            const commentInputEl = document.getElementById('comments')
-            // получаем автора комментария
-            const comment = event.target.closest('.comment')
-            const author = comment.querySelector(
-                '.comment-header div',
-            ).textContent
-            //получаем текст комментария
-            const text = event.target.textContent
-            //Вставляем в форму "> Автор: текст комментария"
-            commentInputEl.value = `${author}: ${text}\n`
-            // Переводим курсор в поле ввода
-            commentInputEl.focus()
-        }
-    })
+    const addCommentsHtml = `
+                  <div class="add-form" id="add-form">
+                    <input
+                        type="text"
+                        class="add-form-name"
+                        placeholder="Введите ваше имя"
+                        id="textarea"
+                    />
+                    <textarea
+                        type="textarea"
+                        class="add-form-text"
+                        placeholder="Введите ваш коментарий"
+                        rows="4"
+                        id="comments"
+                    ></textarea>
+                    <div class="add-form-row">
+                        <button class="add-form-button" id="button">
+                            Написать
+                        </button>
+                    </div>
+                </div>`
 
-    // Обработчик лайка, чтобы не срабатывал ответ на комментарий
-    document.querySelectorAll('.like-button').forEach((button) => {
-        button.addEventListener('click', (e) => {
-            e.stopPropagation()
-            const index = e.target.getAttribute('data-index')
-            const comment = commentsData[index]
-            e.target.classList.add('-loading-like')
-            delay(2000).then(() => {
-                comment.likes = comment.isLiked
-                    ? comment.likes - 1
-                    : comment.likes + 1
-                comment.isLiked = !comment.isLiked
-                comment.isLikeLoading = false
-                renderComments()
+    const commentsListEl = `
+    <ul class="comments">${commentsHTML}</ul>
+    ${
+        token
+            ? addCommentsHtml
+            : `
+      <p>Для добавление комментария,
+      <span class=auth>Авторизуйтесь<span></p>`
+    }
+`
+    container.innerHTML = commentsListEl
+    formListenerComments()
+}
+
+export function formListenerComments() {
+    const answerComment = document.querySelector('.comments')
+    if (token) {
+        answerComment.addEventListener('click', (event) => {
+            // Если кликнули на текст комментария
+            if (event.target.classList.contains('comment-text')) {
+                // находим поле ввода комментария
+                const commentInputEl = document.getElementById('comments')
+                // получаем автора комментария
+                const comment = event.target.closest('.comment')
+                const author = comment.querySelector(
+                    '.comment-header div',
+                ).textContent
+                //получаем текст комментария
+                const text = event.target.textContent
+                //Вставляем в форму "> Автор: текст комментария"
+                commentInputEl.value = `${author}: ${text}\n`
+                // Переводим курсор в поле ввода
+                commentInputEl.focus()
+            }
+        })
+
+        // Обработчик лайка, чтобы не срабатывал ответ на комментарий
+        document.querySelectorAll('.like-button').forEach((button) => {
+            button.addEventListener('click', (e) => {
+                e.stopPropagation()
+                const index = e.target.getAttribute('data-index')
+                const comment = commentsData[index]
+                e.target.classList.add('-loading-like')
+                delay(2000).then(() => {
+                    comment.likes = comment.isLiked
+                        ? comment.likes - 1
+                        : comment.likes + 1
+                    comment.isLiked = !comment.isLiked
+                    comment.isLikeLoading = false
+                    renderComments()
+                })
             })
         })
-    })
-    deleteComments()
+        deleteComments()
+        addCommentListener()
+    } else {
+        const authEl = document.querySelector('.auth')
+        authEl.addEventListener('click', () => {
+            renderLogin()
+        })
+    }
 }

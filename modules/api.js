@@ -1,9 +1,18 @@
 import { formatDate } from './function.js'
-import { fetchAndRenderComments } from './fetchAndRenderComments.js'
-export const host = 'https://wedev-api.sky.pro/api/v1/witalii-barabanov'
-// обновленный список после добавления нового комментария
+
+export const host = 'https://wedev-api.sky.pro/api/v2/witalii-barabanov'
+const authToken = 'https://wedev-api.sky.pro/api/user'
+export let token = ''
+export const updateToken = (newToken) => {
+    token = newToken
+}
+
 export const fetchComments = () => {
-    return fetch(host + '/comments')
+    return fetch(host + '/comments', {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    })
         .then((response) => {
             return response.json()
         })
@@ -21,10 +30,13 @@ export const fetchComments = () => {
             return appComments
         })
 }
-
+// обновленный список после добавления нового комментария
 export const postComment = (name, text) => {
     return fetch(host + '/comments', {
         method: 'POST',
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({
             text,
             name,
@@ -64,7 +76,35 @@ export const postComment = (name, text) => {
 export const deleteComment = (commentId) => {
     return fetch(host + `/comments/${commentId}`, {
         method: 'DELETE',
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
     }).then(() => {
-        fetchAndRenderComments()
+        return fetchComments()
+    })
+}
+
+export const postLogin = (login, password) => {
+    return fetch(authToken + '/login', {
+        method: 'POST',
+        body: JSON.stringify({
+            login: login,
+            password: password,
+        }),
+    }).then((response) => {
+        return response.json()
+    })
+}
+
+export const postRegistration = (login, name, password) => {
+    return fetch(authToken, {
+        method: 'POST',
+        body: JSON.stringify({
+            login: login,
+            password: password,
+            name: name,
+        }),
+    }).then((response) => {
+        return response.json()
     })
 }
