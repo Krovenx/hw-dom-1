@@ -1,6 +1,3 @@
-import { fetchAndRenderComments } from './fetchAndRenderComments.js'
-import { updateCommentsData } from './commentsData.js'
-import { renderComments } from './renderComments.js'
 import { formatDate } from './function.js'
 
 export const host = 'https://wedev-api.sky.pro/api/v2/witalii-barabanov'
@@ -16,8 +13,8 @@ export const fetchComments = () => {
             Authorization: `Bearer ${token}`,
         },
     })
-        .then(() => {
-            return fetchAndRenderComments()
+        .then((response) => {
+            return response.json()
         })
         .then((data) => {
             const appComments = data.comments.map((comment) => {
@@ -30,8 +27,6 @@ export const fetchComments = () => {
                     isLiked: false,
                 }
             })
-            updateCommentsData(appComments)
-            renderComments()
             return appComments
         })
 }
@@ -85,20 +80,19 @@ export const deleteComment = (commentId) => {
             Authorization: `Bearer ${token}`,
         },
     }).then(() => {
-        return fetchAndRenderComments()
+        return fetchComments()
     })
 }
 
 export const postLogin = (login, password) => {
     return fetch(authToken + '/login', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
         body: JSON.stringify({
             login: login,
             password: password,
         }),
+    }).then((response) => {
+        return response.json()
     })
 }
 
@@ -110,5 +104,7 @@ export const postRegistration = (login, name, password) => {
             password: password,
             name: name,
         }),
+    }).then((response) => {
+        return response.json()
     })
 }

@@ -1,17 +1,17 @@
 import { postLogin, updateToken } from './api.js'
-import { fetchComments } from './api.js'
 import { renderRegistration } from './renderRegistration.js'
+import { renderComments } from './renderComments.js'
 
 export const renderLogin = () => {
-    const loginFormEl = document.getElementById('add-form')
-    loginFormEl.innerHTML = `
+    const container = document.querySelector('.container')
+    container.innerHTML = `
      <h1>Страница входа</h1>
     <form class="form">
         <h3 class="form-title">Форма входа</h3>
         <div class="form-row">
             <input type="text" id="login-input" class="input" placeholder="Логин" autocomplete="username" />
             <input type="password" id="password-input" class="input" placeholder="Пароль" autocomplete="current-password" />
-        </div>
+            </div>
         <br />
         <button type="button" class="button" id="login-button">Войти</button>
         <button type="button" class="button" id="reg-button">Зарегистрироваться</button>
@@ -24,7 +24,7 @@ export const renderLogin = () => {
     buttonEl.addEventListener('click', () => {
         postLogin(loginEl.value, passwordEl.value).then((responseData) => {
             updateToken(responseData.user.token)
-            return fetchComments()
+            renderComments()
         })
     })
     const regButtonEl = document.getElementById('reg-button')
